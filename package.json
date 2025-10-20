@@ -1,0 +1,32 @@
+{
+  "name": "exifjs",
+  "version": "1.0.0",
+  "description": "EXIF Reader JavaScript Library",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "npx bun tests/tests.ts",
+    "build": "tsc",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "prepublish": "npm run build"
+  },
+  "keywords": [],
+  "author": {
+    "name": "EthanHoward"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "~"
+  },
+  "dependencies": {
+    "@types/node": "^24.8.1",
+    "bun": "^1.3.0",
+    "tslint": "^6.1.3",
+    "typescript": "^5.9.3"
+  },
+  "files": [
+    "./bin/*",
+    "./lib/*"
+  ],
+  "typings": "./lib/index.d.ts"
+}

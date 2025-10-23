@@ -22,14 +22,20 @@ function test(): void{
         console.log(`${tag.tagName} = ${tag.tagValue}`)
     })
 
-    console.log(`ExifOffset.tagValue as number ---> ${tags.get("ExifOffset")?.tagValue as number}`)
-
     const exifOffset = tags.get("ExifOffset")?.tagValue as number ?? 1;
+
+    console.log(`ExifOffset: ${exifOffset}. EOHS: ${ifdReader.toHexString(exifOffset)}`)
 
     const numEntries = ifdReader.readNumEntries(exifOffset);
     
+    ifdReader.readIFDTag(exifOffset, 6);
+
+    return;
+
+
     for (var i = 0; i < numEntries; i++) {
-        console.log(ifdReader.readIFDTag(exifOffset, i));
+        var tag = ifdReader.readIFDTag(exifOffset, i)
+        console.log(`${tag.tagName} = ${tag.tagValue}`);
     }
 }
 

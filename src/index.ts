@@ -138,6 +138,15 @@ class IFDReader {
   }
 
   /**
+   * Converts number into hex rep
+   * @param {number} num - The number to be converted into 
+   * @returns {string} the 0x<> string.
+   */
+  toHexString(num: number): string {
+    return "0x" + num.toString(16).toUpperCase().padStart(4, "0")
+  }
+
+  /**
    * Finds TIFF APP1 Segment Start
    * @returns {number} Tiff start offset
    */
@@ -202,7 +211,6 @@ class IFDReader {
 
   /**
    * Get a buffer where a tag value may be PTR or INLINE
-   * @param tagType EXIF/IFD type
    * @param count number of components
    * @param valueOffset the 4-byte valueOffset field
    * @param typeSize size in bytes of a single component
@@ -213,6 +221,8 @@ class IFDReader {
     typeSize: number
   ): Buffer {
     const totalSize = count * typeSize;
+
+    console.log(`VO: ${this.toHexString(valueOffset)}`);
 
     if (totalSize <= 4) {
       const buf = Buffer.alloc(totalSize);
@@ -411,8 +421,6 @@ class IFDReader {
     const tagCount = this.readUInt32(entryOffset + 4);
     const valueOffset = this.readUInt32(entryOffset + 8);
 
-    // console.log("0x" + valueOffset.toString(16).toUpperCase().padStart(4, "0"));
-
     const readAlias = [
       this.readByte,
       this.readASCII,
@@ -430,7 +438,8 @@ class IFDReader {
 
     if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType}`);
  
-   // console.log(`EO: ${entryOffset}, TI: ${"0x" + tagID.toString(16).toUpperCase().padStart(4, "0")}, TT: ${tagType}, TC: ${tagCount}, VO: ${"0x" + valueOffset.toString(16).toUpperCase().padStart(4, "0")}, RA: ${readAlias}`);
+    //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF
+   console.log(`SO-TS: ${sectionOffset - this.TIFFStart}, SO: ${sectionOffset} EO: ${entryOffset}, TI: ${this.toHexString(tagID)}, TT: ${tagType}, TC: ${tagCount}, VO: ${this.toHexString(valueOffset)}, RA: ${0}`);
 
     const tagValue: any =
       tagType !== IFDTypes.ASCII && tagType !== IFDTypes.UNDEFINED
@@ -443,7 +452,7 @@ class IFDReader {
 
     const tagName =
       ExifTags[tagID]?.name ??
-      "0x" + tagID.toString(16).toUpperCase().padStart(4, "0");
+      this.toHexString(tagID);
 
     return {
       tagID,

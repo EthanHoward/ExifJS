@@ -1,5 +1,5 @@
 //! TODO: Add more tag IDs from https://exiv2.org/tags.html
-import { IFDTypes } from "./ifdTypes";
+import IFDTypes from "./ifdTypes";
 
 /**
  * Stores mappings for all default EXIF types.

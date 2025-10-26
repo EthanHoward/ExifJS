@@ -1,4 +1,4 @@
-import { IFDTypes } from "./ifdTypes";
+import IFDTypes from "./ifdTypes";
 import { IFDTag } from "../typings";
 import { ExifTags } from "./exifTags";
 
@@ -6,6 +6,10 @@ import { ExifTags } from "./exifTags";
  * Reads a given IFD section based on image buffer, IFD Offset and endianness
  */
 class IFDReader {
+
+  private readUInt16: (offset: number) => number;
+  private readUInt32: (offset: number) => number;
+
   /**
    * Image Buffer
    */
@@ -15,8 +19,10 @@ class IFDReader {
 
   private littleEndian: boolean;
 
-  private readUInt16: (offset: number) => number;
-  private readUInt32: (offset: number) => number;
+  /**
+   * 
+   */
+  private tags: Map<string, IFDTag> = new Map();
 
   /**
    * Constructs a new IFDReader class instance
@@ -31,8 +37,10 @@ class IFDReader {
 
     this.littleEndian = littleEndian;
 
-    this.readUInt16 = this.littleEndian ? this.buf.readUint16LE : this.buf.readUint16BE;
-    this.readUInt32 = this.littleEndian ? this.buf.readUint32LE : this.buf.readUint32BE;
+    this.readUInt16 = this.buf[this.littleEndian ? "readUInt16LE" : "readUInt16BE"].bind(this.buf);
+    this.readUInt32 = this.buf[this.littleEndian ? "readUInt32LE" : "readUInt32BE"].bind(this.buf);
+
+    this.readAllIFDtags();
   }
 
   /**
@@ -42,39 +50,6 @@ class IFDReader {
    */
   toHexString(num: number): string {
     return "0x" + num.toString(16).toUpperCase().padStart(4, "0")
-  }
-
-  /**
-   * Finds TIFF APP1 Segment Start
-   * @returns {number} Tiff start offset
-   */
-  private findTIFFStart(): number {
-    if (this.buf[0] === 0xff && this.buf[1] === 0xd8) {
-      let offset = 2;
-      while (offset < this.buf.length) {
-        if (this.buf[offset] !== 0xff) {
-          offset++;
-          continue;
-        }
-        while (this.buf[offset] === 0xff) offset++;
-        const marker = this.buf[offset++];
-        if (marker === 0xd9) break; // EOI
-        if (offset + 2 > this.buf.length) break;
-        const length = this.buf.readUInt16BE(offset);
-        offset += 2;
-
-        if (marker === 0xe1) {
-          // APP1
-          if (this.buf.toString("ascii", offset, offset + 6) === "Exif\0\0") {
-            return offset + 6; // TIFF starts here
-          }
-        }
-        offset += length - 2;
-      }
-      throw new Error("No EXIF APP1 segment found");
-    }
-
-    return 0;
   }
 
   /**
@@ -89,8 +64,6 @@ class IFDReader {
     typeSize: number
   ): Buffer {
     const totalSize = count * typeSize;
-
-    //console.log(`VO: ${this.toHexString(valueOffset)}`);
 
     if (totalSize <= 4) {
       const buf = Buffer.alloc(totalSize);
@@ -276,7 +249,7 @@ class IFDReader {
    * @param {number} sectionOffset - The offset of the given IFD section which is to be read
    * @param {number} index - The index of the tag which is targeted
    */
-  readIFDTag(sectionOffset: number, index: number): IFDTag {
+  private readIFDTag(sectionOffset: number, index: number): IFDTag {
     const numEntries = this.readNumEntries(sectionOffset);
 
     if (index >= numEntries) {
@@ -306,9 +279,8 @@ class IFDReader {
 
     if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType}`);
  
-    //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF
-   //console.log(`SO-TS: ${sectionOffset - this.TIFFStart}, SO: ${sectionOffset} EO: ${entryOffset}, TI: ${this.toHexString(tagID)}, TT: ${tagType}, TC: ${tagCount}, VO: ${this.toHexString(valueOffset)}, RA: ${0}`);
-
+   //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF ExifOffset @ Value 7 is wrong.
+   
     const tagValue: any =
       tagType !== IFDTypes.ASCII && tagType !== IFDTypes.UNDEFINED
         ? (readAlias as (offset: number, count: number) => any).call(
@@ -331,13 +303,22 @@ class IFDReader {
     };
   }
 
-  getAllIFD0Tags(): Map<string, IFDTag> {
+  private readAllIFDtags(): void {
     const IFDEntryCount = this.readNumEntries(this.IFDOffset);
-    const tags: Map<string, IFDTag> = new Map();
     for (let i = 0; i < IFDEntryCount; i++) {
-      const tag = this.readIFDTag(this.IFDOffset, i);
-      tags.set(tag.tagName, tag);
+      try {
+        const tag = this.readIFDTag(this.IFDOffset, i);
+        this.tags.set(tag.tagName, tag);
+        console.log(`${tag.tagName} = ${tag.tagValue}`);
+      } catch (e) {
+        console.log(`Error reading tag at index ${i}`);
+      }
     }
-    return tags;
+  }
+  
+  getAllTags(): typeof this.tags {
+    return this.tags;
   }
 }
+
+export default IFDReader;

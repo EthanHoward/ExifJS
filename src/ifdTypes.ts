@@ -16,8 +16,7 @@
  * | 12        | DOUBLE   | 8                   |
  * +-----------+----------+---------------------+
  */
-
-export enum IFDTypes {
+ enum IFDTypes {
   /** uint8 */
   BYTE,
 
@@ -54,3 +53,6 @@ export enum IFDTypes {
   /** float64 */
   DOUBLE
 }
+
+
+export default IFDTypes;

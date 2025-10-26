@@ -1,5 +1,5 @@
 import { tCameraModels } from "../typings";
-import { IFDTypes } from "./ifdTypes";
+import IFDTypes from "./ifdTypes";
 
 
 ///! Idea: Design this in a hierarchial manner in which if one mapping by same maker does not have a given offset / tag, it looks at another or we make it so there's like a 'Common' and that's imported, or some override method... idk

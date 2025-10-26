@@ -22,3 +22,20 @@ This project uses data and/or insiration from the below sources:
 | Finish standardised EXIF tags in src/exifTags| N/A |
 | Code for handling IFDType[n] such as uint16[n] cases | All types in exifTags denoted as '[n]' will need such code|
 
+# Enabling Debug Logs in ExifJS
+
+ExifJS includes optional **debug logging** for development and troubleshooting.  
+By default, debug logs are disabled. You can enable them by setting an environment variable `DEVENV=1`.
+
+---
+
+## Node.js (Linux / macOS)
+
+Temporarily for one command:
+
+```bash
+DEVENV=1 node dist/index.js
+```
+
+## VSCode Launch Config
+The launch config, which runs the tests for this library automatically provides DEVENV=1, if you wish to disable dev logging, change it in the launch config from "1" to "0"

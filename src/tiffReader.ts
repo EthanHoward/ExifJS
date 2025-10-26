@@ -1,18 +1,24 @@
+import log from "./debug/debugger";
+
 /**
  * Reads information about the TIFF section of the given file
  */
 class TIFFReader {
   private buf: Buffer;
-  private tiffStartOffset: any;
+  private tiffStart: any;
   private littleEndian: boolean;
 
   constructor(buffer: Buffer) {
     this.buf = buffer;
-    this.tiffStartOffset = this.findTiffStartOffset();
+    this.tiffStart = this.findTiffStart();
     this.littleEndian = this.detectEndian();
+
+    this.verifyTIFFHeader();
+
+    log(`TIFFReader buffLen: ${this.buf.length} tiffStartOffset: ${this.tiffStart} littleEndian: ${this.littleEndian}`); 
   }
 
-  private findTiffStartOffset(): number {
+  private findTiffStart(): number {
     if (this.buf[0] === 0xff && this.buf[1] === 0xd8) {
       let offset = 2;
       while (offset < this.buf.length) {
@@ -42,7 +48,7 @@ class TIFFReader {
   }
 
   private detectEndian(): boolean {
-    const endian = this.buf.toString("ascii", this.tiffStartOffset, this.tiffStartOffset + 2);
+    const endian = this.buf.toString("ascii", this.tiffStart, this.tiffStart + 2);
     if (endian === "II") return true;
     if (endian === "MM") return false;
     throw new Error("Invalid TIFF Endian Header");
@@ -52,7 +58,7 @@ class TIFFReader {
    * Verifies the TIFF Magic number
    */
   private verifyTIFFHeader() {
-    const magic = this.littleEndian ? this.buf.readUInt16LE(this.tiffStartOffset + 2) : this.buf.readUInt16BE(this.tiffStartOffset + 2);
+    const magic = this.littleEndian ? this.buf.readUInt16LE(this.tiffStart + 2) : this.buf.readUInt16BE(this.tiffStart + 2);
     if (magic != 0x2a) throw new Error("Invalid TIFF header magic number");
   }
 
@@ -69,7 +75,12 @@ class TIFFReader {
    * @returns {number} tiffStartOffset
    */
   getTIFFStartOffset(): number {
-    return this.tiffStartOffset;
+    return this.tiffStart;
+  }
+
+  getFirstIFDOffset(): number {
+    const relOffset = this.littleEndian ? this.buf.readUint32LE(this.getTIFFStartOffset() + 4) :this.buf.readUint32BE(this.getTIFFStartOffset() + 4);
+    return relOffset + this.getTIFFStartOffset();
   }
 }
 

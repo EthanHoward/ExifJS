@@ -1,4 +1,4 @@
-import { tCameraModels } from "../typings";
+import { tCameraModels } from "../../typings";
 import IFDTypes from "./ifdTypes";
 
 

@@ -1,4 +1,4 @@
-import { IFDTypes } from "../src/ifdTypes";
+import IFDTypes from "../src/meta/ifdTypes";
 
 /**
  * Stores the offsets for each tag in EXIF and MakerNote

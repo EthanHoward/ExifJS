@@ -1,12 +1,12 @@
-import IFDTypes from "./ifdTypes";
+import IFDTypes from "./meta/ifdTypes";
 import { IFDTag } from "../typings";
-import { ExifTags } from "./exifTags";
+import { ExifTags } from "./meta/exifTags";
+import log from "./debug/debugger";
 
 /**
  * Reads a given IFD section based on image buffer, IFD Offset and endianness
  */
 class IFDReader {
-
   private readUInt16: (offset: number) => number;
   private readUInt32: (offset: number) => number;
 
@@ -15,12 +15,18 @@ class IFDReader {
    */
   private buf: Buffer<ArrayBufferLike>;
 
+  /**
+   * Offset of the IFD section from the file's start
+   */
   private IFDOffset: number;
 
+  /**
+   * Self explanatory really, true = LE, false = BE
+   */
   private littleEndian: boolean;
 
   /**
-   * 
+   * Stores found IFD Tags from readAllIFDTags()
    */
   private tags: Map<string, IFDTag> = new Map();
 
@@ -28,7 +34,7 @@ class IFDReader {
    * Constructs a new IFDReader class instance
    * @param {Buffer} buffer The image buffer
    * @param {number} IFDOffset The offset of the given IFD from the start of the file, (TiffOffset + IFDOffset)
-   * @param {boolean} littleEndian The endianness of this, 
+   * @param {boolean} littleEndian The endianness of this,
    */
   constructor(buffer: Buffer, IFDOffset: number, littleEndian: boolean) {
     this.buf = buffer;
@@ -41,15 +47,17 @@ class IFDReader {
     this.readUInt32 = this.buf[this.littleEndian ? "readUInt32LE" : "readUInt32BE"].bind(this.buf);
 
     this.readAllIFDtags();
+
+    log(`IFDReader buffLen: ${this.buf.length} IFDOffset: ${this.IFDOffset} littleEndian: ${this.littleEndian}`);
   }
 
   /**
    * Converts number into hex rep
-   * @param {number} num - The number to be converted into 
+   * @param {number} num - The number to be converted into
    * @returns {string} the 0x<> string.
    */
   toHexString(num: number): string {
-    return "0x" + num.toString(16).toUpperCase().padStart(4, "0")
+    return "0x" + num.toString(16).toUpperCase().padStart(4, "0");
   }
 
   /**
@@ -58,11 +66,7 @@ class IFDReader {
    * @param valueOffset the 4-byte valueOffset field
    * @param typeSize size in bytes of a single component
    */
-  private getValueBuffer(
-    count: number,
-    valueOffset: number,
-    typeSize: number
-  ): Buffer {
+  private getValueBuffer(count: number, valueOffset: number, typeSize: number): Buffer {
     const totalSize = count * typeSize;
 
     if (totalSize <= 4) {
@@ -72,14 +76,10 @@ class IFDReader {
           buf.writeUInt8(valueOffset, 0);
           break;
         case 2:
-          this.littleEndian
-            ? buf.writeUInt16LE(valueOffset, 0)
-            : buf.writeUInt16BE(valueOffset, 0);
+          this.littleEndian ? buf.writeUInt16LE(valueOffset, 0) : buf.writeUInt16BE(valueOffset, 0);
           break;
         case 4:
-          this.littleEndian
-            ? buf.writeUInt32LE(valueOffset, 0)
-            : buf.writeUInt32BE(valueOffset, 0);
+          this.littleEndian ? buf.writeUInt32LE(valueOffset, 0) : buf.writeUInt32BE(valueOffset, 0);
           break;
       }
       return buf;
@@ -88,7 +88,6 @@ class IFDReader {
       return this.buf.slice(start, start + totalSize);
     }
   }
-  
 
   /**
    * Read an unsigned 8-bit byte from the buffer.
@@ -263,36 +262,25 @@ class IFDReader {
     const valueOffset = this.readUInt32(entryOffset + 8);
 
     const readAlias = [
-      this.readByte,
-      this.readASCII,
-      this.readShort,
-      this.readLong,
-      this.readRational,
-      this.readSByte,
-      this.readUndefined,
-      this.readSShort,
-      this.readSLong,
-      this.readSRational,
-      this.readFloatValue,
-      this.readDoubleValue,
+      this.readByte,       this.readASCII, 
+      this.readShort,      this.readLong, 
+      this.readRational,   this.readSByte, 
+      this.readUndefined,  this.readSShort, 
+      this.readSLong,      this.readSRational, 
+      this.readFloatValue, this.readDoubleValue
     ][tagType - 1];
 
-    if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType}`);
- 
-   //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF ExifOffset @ Value 7 is wrong.
-   
-    const tagValue: any =
-      tagType !== IFDTypes.ASCII && tagType !== IFDTypes.UNDEFINED
-        ? (readAlias as (offset: number, count: number) => any).call(
-            this,
-            valueOffset,
-            tagCount
-          )
-        : (readAlias as (offset: number) => any).call(this, valueOffset);
+    if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType - 1} -> ${IFDTypes[tagType - 1]}`);
 
-    const tagName =
-      ExifTags[tagID]?.name ??
-      this.toHexString(tagID);
+    //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF ExifOffset @ Value 7 is wrong.
+
+    const tagValue: any = tagType - 1 !== IFDTypes.ASCII && tagType - 1 !== IFDTypes.UNDEFINED ? (readAlias as (offset: number, count: number) => any).call(this, valueOffset, tagCount) : (readAlias as (offset: number) => any).call(this, valueOffset);
+
+    const tagName = ExifTags[tagID]?.name ?? this.toHexString(tagID);
+
+    
+
+    log(`IFDReader val: ${tagValue} nam: ${tagName} ind: ${index} entOffs: ${entryOffset} tagId: ${this.toHexString(tagID)} tagTypeInt: ${tagType} tagTypeEnum: ${IFDTypes[tagType-1]} tagCnt: ${tagCount} valOff: ${valueOffset} -> handler = ${readAlias}`);
 
     return {
       tagID,
@@ -305,17 +293,19 @@ class IFDReader {
 
   private readAllIFDtags(): void {
     const IFDEntryCount = this.readNumEntries(this.IFDOffset);
+    log(`IFDReader Reading ${IFDEntryCount} IFD entries at offset ${this.IFDOffset}`);
+
     for (let i = 0; i < IFDEntryCount; i++) {
       try {
         const tag = this.readIFDTag(this.IFDOffset, i);
         this.tags.set(tag.tagName, tag);
-        console.log(`${tag.tagName} = ${tag.tagValue}`);
+        //log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${tag.tagValue}`);
       } catch (e) {
-        console.log(`Error reading tag at index ${i}`);
+        log(`IFDReader Error reading tag at index ${i} -> ${e.name}: ${e.message}`);
       }
     }
   }
-  
+
   getAllTags(): typeof this.tags {
     return this.tags;
   }

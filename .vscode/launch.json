@@ -11,6 +11,9 @@
       "runtimeExecutable": "node",
       "cwd": "${workspaceFolder}",
       "program": "${cwd}/dist/tests/tests.js",
+      "env": {
+        "DEVENV": "1"
+      },
       "preLaunchTask": "compound: pretest",
       "console": "integratedTerminal",
       "skipFiles": [

@@ -222,7 +222,7 @@ class IFDReader {
   ): Buffer {
     const totalSize = count * typeSize;
 
-    console.log(`VO: ${this.toHexString(valueOffset)}`);
+    //console.log(`VO: ${this.toHexString(valueOffset)}`);
 
     if (totalSize <= 4) {
       const buf = Buffer.alloc(totalSize);
@@ -439,7 +439,7 @@ class IFDReader {
     if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType}`);
  
     //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF
-   console.log(`SO-TS: ${sectionOffset - this.TIFFStart}, SO: ${sectionOffset} EO: ${entryOffset}, TI: ${this.toHexString(tagID)}, TT: ${tagType}, TC: ${tagCount}, VO: ${this.toHexString(valueOffset)}, RA: ${0}`);
+   //console.log(`SO-TS: ${sectionOffset - this.TIFFStart}, SO: ${sectionOffset} EO: ${entryOffset}, TI: ${this.toHexString(tagID)}, TT: ${tagType}, TC: ${tagCount}, VO: ${this.toHexString(valueOffset)}, RA: ${0}`);
 
     const tagValue: any =
       tagType !== IFDTypes.ASCII && tagType !== IFDTypes.UNDEFINED

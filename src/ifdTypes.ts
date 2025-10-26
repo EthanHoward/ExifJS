@@ -25,13 +25,13 @@ export enum IFDTypes {
   ASCII,
 
   /** uint16 */
-  SHORT,
+  UINT16,
 
   /** uint32 */
-  LONG,
+  UINT32,
 
   /** uint32[2] — numerator/denominator */
-  RATIONAL,
+  URATIONAL64,
 
   /** int8 */
   SBYTE,
@@ -40,13 +40,13 @@ export enum IFDTypes {
   UNDEFINED,
 
   /** int16 */
-  SSHORT,
+  INT16,
 
   /** int32 */
-  SLONG,
+  INT32,
 
   /** int32[2] — numerator/denominator */
-  SRATIONAL,
+  RATIONAL64,
 
   /** float32 */
   FLOAT,

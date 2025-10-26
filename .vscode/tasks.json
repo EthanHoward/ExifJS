@@ -1,0 +1,58 @@
+{
+  // It's no CMake... but it'll do (I h8 CMake)
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npx",
+      "args": ["tsc", "--build"],
+      "group": "build",
+      "problemMatcher": ["$tsc"],
+      "dependsOn": ["clean: create dist"]
+    },
+    {
+      "label": "build: tests",
+      "type": "shell",
+      "command": "npx",
+      "args": ["tsc", "--build", "tsconfig.tests.json"],
+      "dependsOn": ["copy: test data"]
+    },
+    {
+      "label": "clean: remove dist",
+      "type": "shell",
+      "windows": {
+        "command": "rm -r dist || 1",
+      },
+      "osx": {
+        "command": "rm",
+        "args": ["./dist", "-rf", "|| true"],
+      },
+      "linux": {
+        "command": "rm",
+        "args": ["./dist", "-rf", "|| true"],
+      },
+    },
+    {
+      "label": "clean: create dist",
+      "type": "shell",
+      "command": "mkdir",
+      "args": ["dist"],
+      "problemMatcher": [],
+      "dependsOn": ["clean: remove dist"]
+    },
+    {
+      "label": "copy: test data",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cpy-cli", "tests/data/**/*", "dist/tests/data", "--flat=false"],
+      "problemMatcher": [],
+      "dependsOn": ["clean: create dist"]
+    },
+    {
+      "label": "compound: pretest",
+      "dependsOn": ["build: tests"],
+      "problemMatcher": []
+    }
+  ]
+}

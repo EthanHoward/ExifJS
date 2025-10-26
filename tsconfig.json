@@ -3,14 +3,21 @@
 		"target": "es5",
 		"module": "commonjs",
 		"moduleResolution": "node",
+		"sourceMap": true,
 		"lib": [
 			"es2015"
 		],
 
-		"rootDir": "src",
-		"outDir": "lib",
+		"esModuleInterop": true,
 
-		"strict": true,
+		"rootDir": "src",
+		"outDir": "dist/src",
+
+		"noEmitOnError": false,
+		"strict": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+
 		"alwaysStrict": true,
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
@@ -21,8 +28,6 @@
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
 
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,

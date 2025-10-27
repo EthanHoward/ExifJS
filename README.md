@@ -39,3 +39,6 @@ DEVENV=1 node dist/index.js
 
 ## VSCode Launch Config
 The launch config, which runs the tests for this library automatically provides DEVENV=1, if you wish to disable dev logging, change it in the launch config from "1" to "0"
+
+## .ts.old?
+Just old files of original code I may need to refer to, can be ignored and are not compiled into dist.

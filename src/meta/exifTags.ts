@@ -1,10 +1,11 @@
 //! TODO: Add more tag IDs from https://exiv2.org/tags.html
+import { EXIFTagMapping } from "../../typings";
 import IFDTypes from "./ifdTypes";
 
 /**
  * Stores mappings for all default EXIF types.
  */
-export const ExifTags: Record<number, { name: string; type: IFDTypes, count?: number }> = {
+export const ExifTags: Record<number, EXIFTagMapping> = {
   0x0001: { name: "InteropIndex", type: IFDTypes.ASCII },
   0x0002: { name: "InteropVersion", type: IFDTypes.UNDEFINED },
   0x000b: { name: "ProcessingSoftware", type: IFDTypes.ASCII },

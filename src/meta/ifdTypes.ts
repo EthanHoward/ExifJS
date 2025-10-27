@@ -54,5 +54,4 @@
   DOUBLE
 }
 
-
 export default IFDTypes;

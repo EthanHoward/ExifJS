@@ -17,12 +17,31 @@ export type tCameraModels = {
 };
 
 /**
+ * Rational type (Fraction essentially)
+ */
+export type Rational = { 
+  num: number; 
+  den: number; 
+  value: number 
+};
+
+/**
+ * Mapping used in exifTags.ts
+ */
+export type EXIFTagMapping = { 
+  name: string; 
+  type: IFDTypes 
+}
+
+/**
  * Type for IFD Tag
+ * 
+ * 
  */
 export type IFDTag = {
-    tagID: number,
-    tagType: number,
-    tagCount: number,
-    tagValue: number | Buffer<ArrayBufferLike> | string;
-    tagName: string;
-}
+  tagID: number;
+  tagType: number;
+  tagCount: number;
+  tagValue: number | string | Buffer<ArrayBufferLike> | Rational | Array<number | string | Buffer<ArrayBufferLike> | Rational>;
+  tagName: string;
+};

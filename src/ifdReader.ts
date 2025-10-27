@@ -1,5 +1,5 @@
 import IFDTypes from "./meta/ifdTypes";
-import { IFDTag } from "../typings";
+import { EXIFTagMapping, IFDTag } from "../typings";
 import { ExifTags } from "./meta/exifTags";
 import log from "./debug/debugger";
 
@@ -31,24 +31,32 @@ class IFDReader {
   private tags: Map<string, IFDTag> = new Map();
 
   /**
+   * The tiff start offset.
+   */
+  private TIFFStart: number;
+
+  /**
    * Constructs a new IFDReader class instance
    * @param {Buffer} buffer The image buffer
-   * @param {number} IFDOffset The offset of the given IFD from the start of the file, (TiffOffset + IFDOffset)
+   * @param {number} relIFDOffset The offset of the given IFD from the start of the file, (TiffOffset + IFDOffset)
    * @param {boolean} littleEndian The endianness of this,
    */
-  constructor(buffer: Buffer, IFDOffset: number, littleEndian: boolean) {
+  constructor(buffer: Buffer, relIFDOffset: number, tiffStartOffset: number, littleEndian: boolean) {
     this.buf = buffer;
 
-    this.IFDOffset = IFDOffset;
+    this.IFDOffset = relIFDOffset;
+    this.TIFFStart = tiffStartOffset;
 
     this.littleEndian = littleEndian;
+
+    log(`IFDReader buffLen: ${this.buf.length} IFDOffset: ${this.IFDOffset} littleEndian: ${this.littleEndian}`);
 
     this.readUInt16 = this.buf[this.littleEndian ? "readUInt16LE" : "readUInt16BE"].bind(this.buf);
     this.readUInt32 = this.buf[this.littleEndian ? "readUInt32LE" : "readUInt32BE"].bind(this.buf);
 
     this.readAllIFDtags();
 
-    log(`IFDReader buffLen: ${this.buf.length} IFDOffset: ${this.IFDOffset} littleEndian: ${this.littleEndian}`);
+    
   }
 
   /**
@@ -69,6 +77,8 @@ class IFDReader {
   private getValueBuffer(count: number, valueOffset: number, typeSize: number): Buffer {
     const totalSize = count * typeSize;
 
+    //console.log(`VO: ${this.toHexString(valueOffset)}`);
+
     if (totalSize <= 4) {
       const buf = Buffer.alloc(totalSize);
       switch (typeSize) {
@@ -84,29 +94,25 @@ class IFDReader {
       }
       return buf;
     } else {
-      const start = valueOffset;
+      const start = this.TIFFStart + valueOffset;
       return this.buf.slice(start, start + totalSize);
     }
   }
 
   /**
-   * Read an unsigned 8-bit byte from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The unsigned byte value.
+   *  IFD Tag Format
+   *  +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+   *  | Bytes  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9      | 10     | 11     |
+   *  +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+   *  | Field  | Tag ID (2 bytes)| Type (2 bytes)  | Count (4 bytes)                   | Value Offset / Value (4 bytes)    |
+   *  +--------+-----------------+-----------------+-----------------------------------+-----------------------------------+
+   *  | Means  | Identifies the  | Indicates data  | Number of components              | Either the value (if <=4 bytes)   |
+   *  |        | tag             | type            | of the data type                  | or offset to actual value         |
+   *  +--------+-----------------+-----------------+-----------------------------------+-----------------------------------+
    */
-  private readByte(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 1);
-    return buf.readUInt8(0);
-  }
 
-  /**
-   * Read a signed 8-bit byte from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The signed byte value.
-   */
-  private readSByte(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 1);
-    return buf.readInt8(0);
+  readNumEntries(sectionOffset: number): number {
+    return this.readUInt16(this.TIFFStart + sectionOffset);
   }
 
   /**
@@ -123,172 +129,86 @@ class IFDReader {
   }
 
   /**
-   * Read a raw undefined/byte sequence from the buffer.
-   * @param {number} offset - The starting offset of the data.
-   * @param {number} count - The number of bytes to read.
-   * @returns {Buffer} The raw byte slice.
+   * Generic-isised code to allow reading of count > 1 tags, casts to T[] | T
    */
-  private readUndefined(offset: number, count: number): number | Buffer {
-    if (count == 1) return this.readLong(offset);
-    return this.getValueBuffer(count, offset, 1);
-  }
-
-  /**
-   * Read an unsigned 16-bit short from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The unsigned 16-bit value.
-   */
-  private readShort(offset: number, count = 1): number | number[] {
-    const buf = this.getValueBuffer(count, offset, 2);
-    if (count === 1) return this.littleEndian ? buf.readUInt16LE(0) : buf.readUInt16BE(0);
-    const arr: number[] = [];
+  private readArray<T>(offset: number, count: number, size: number, reader: (buf: Buffer, off: number) => T): T[] {
+    const buffer = this.getValueBuffer(count, offset, size);
+    const arr: T[] = [];
     for (let i = 0; i < count; i++) {
-      arr.push(this.littleEndian ? buf.readUInt16LE(i * 2) : buf.readUInt16BE(i * 2));
+      arr.push(reader(buffer, i * size));
     }
     return arr;
   }
 
   /**
-   * Read a signed 16-bit short from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The signed 16-bit value.
+   * Reads a tag as rawdata for casting
+   * @param offset
+   * @param type
+   * @param count
    */
-  private readSShort(offset: number, count = 1): number | number[] {
-    const buf = this.getValueBuffer(count, offset, 2);
-    if (count === 1) return this.littleEndian ? buf.readInt16LE(0) : buf.readInt16BE(0);
-    const arr: number[] = [];
-    for (let i = 0; i < count; i++) {
-      arr.push(this.littleEndian ? buf.readInt16LE(i * 2) : buf.readInt16BE(i * 2));
+  private readData(offset: number, type: IFDTypes, count: number): any {
+    switch (type) {
+      case IFDTypes.BYTE:
+        return this.readArray(offset, count, 1, (b, o) => b.readUInt8(o));
+      case IFDTypes.ASCII:
+        return this.readASCII(offset, count);
+      case IFDTypes.UINT16:
+        return this.readArray(offset, count, 2, (b, o) => (this.littleEndian ? b.readUInt16LE(o) : b.readUInt16BE(o)));
+      case IFDTypes.UINT32:
+        return this.readArray(offset, count, 4, (b, o) => (this.littleEndian ? b.readUInt32LE(o) : b.readUInt32BE(o)));
+      case IFDTypes.URATIONAL64:
+        return this.readArray(offset, count, 8, (b, o) => {
+          const num = this.littleEndian ? b.readUInt32LE(o) : b.readUInt32BE(o);
+          const den = this.littleEndian ? b.readUInt32LE(o + 4) : b.readUInt32BE(o + 4);
+          return { numerator: num, denominator: den, resolved: den !== 0 ? num / den : 0 };
+        });
+      case IFDTypes.SBYTE:
+        return this.readArray(offset, count, 1, (b, o) => b.readInt8(o));
+      case IFDTypes.UNDEFINED:
+        return this.getValueBuffer(count, offset, 1);
+      case IFDTypes.INT16:
+        return this.readArray(offset, count, 2, (b, o) => (this.littleEndian ? b.readInt16LE(o) : b.readInt16BE(o)));
+      case IFDTypes.INT32:
+        return this.readArray(offset, count, 4, (b, o) => (this.littleEndian ? b.readInt32LE(o) : b.readInt32BE(o)));
+      case IFDTypes.RATIONAL64:
+        return this.readArray(offset, count, 8, (b, o) => {
+          const num = this.littleEndian ? b.readInt32LE(o) : b.readInt32BE(o);
+          const den = this.littleEndian ? b.readInt32LE(o + 4) : b.readInt32BE(o + 4);
+          return { numerator: num, denominator: den, resolved: den !== 0 ? num / den : 0 };
+        });
+      case IFDTypes.FLOAT:
+        return this.readArray(offset, count, 4, (b, o) => (this.littleEndian ? b.readFloatLE(o) : b.readFloatBE(o)));
+      case IFDTypes.DOUBLE:
+        return this.readArray(offset, count, 8, (b, o) => (this.littleEndian ? b.readDoubleLE(o) : b.readDoubleBE(o)));
+      default:
+        throw new Error(`Unknown IFD Type: ${type}`);
     }
-    return arr;
-  }
-
-  /**
-   * Read an unsigned 32-bit long from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The unsigned 32-bit value.
-   */
-  private readLong(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 4);
-    return this.littleEndian ? buf.readUInt32LE(0) : buf.readUInt32BE(0);
-  }
-
-  /**
-   * Read a signed 32-bit long from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The signed 32-bit value.
-   */
-  private readSLong(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 4);
-    return this.littleEndian ? buf.readInt32LE(0) : buf.readInt32BE(0);
-  }
-
-  /**
-   * Read an unsigned 32-bit rational (numerator/denominator) from the buffer.
-   * @param {number} offset - The starting offset of the rational value.
-   * @returns {number} The computed rational value as a floating-point number.
-   */
-  private readRational(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 8);
-    const numerator = this.littleEndian ? buf.readUInt32LE(0) : buf.readUInt32BE(0);
-    const denominator = this.littleEndian ? buf.readUInt32LE(4) : buf.readUInt32BE(4);
-    return denominator !== 0 ? numerator / denominator : 0;
-  }
-
-  /**
-   * Read a signed 32-bit rational (numerator/denominator) from the buffer.
-   * @param {number} offset - The starting offset of the rational value.
-   * @returns {number} The computed signed rational value as a floating-point number.
-   */
-  private readSRational(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 8);
-    const numerator = this.littleEndian ? buf.readInt32LE(0) : buf.readInt32BE(0);
-    const denominator = this.littleEndian ? buf.readInt32LE(4) : buf.readInt32BE(4);
-    return denominator !== 0 ? numerator / denominator : 0;
-  }
-
-  /**
-   * Read a 32-bit IEEE 754 floating-point number from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The floating-point value.
-   */
-  private readFloatValue(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 4);
-    return this.littleEndian ? buf.readFloatLE(0) : buf.readFloatBE(0);
-  }
-
-  /**
-   * Read a 64-bit IEEE 754 double-precision number from the buffer.
-   * @param {number} offset - The byte offset in the buffer.
-   * @returns {number} The double-precision floating-point value.
-   */
-  private readDoubleValue(offset: number): number {
-    const buf = this.getValueBuffer(1, offset, 8);
-    return this.littleEndian ? buf.readDoubleLE(0) : buf.readDoubleBE(0);
-  }
-
-  /**
-   *  IFD Tag Format
-   *  +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-   *  | Bytes  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9      | 10     | 11     |
-   *  +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-   *  | Field  | Tag ID (2 bytes)| Type (2 bytes)  | Count (4 bytes)                   | Value Offset / Value (4 bytes)    |
-   *  +--------+-----------------+-----------------+-----------------------------------+-----------------------------------+
-   *  | Means  | Identifies the  | Indicates data  | Number of components              | Either the value (if <=4 bytes)   |
-   *  |        | tag             | type            | of the data type                  | or offset to actual value         |
-   *  +--------+-----------------+-----------------+-----------------------------------+-----------------------------------+
-   */
-
-  readNumEntries(sectionOffset: number): number {
-    return this.readUInt16(sectionOffset);
   }
 
   /**
    * Reads an IFD Tag given the sectionOffset, this is the offset FROM the tiff header, not including the tiff start, and an index
-   * @param {number} sectionOffset - The offset of the given IFD section which is to be read
+   * @param {number} ifdSectionOffset - The offset of the given IFD section which is to be read
    * @param {number} index - The index of the tag which is targeted
+   * @returns {IFDTag} ifdTag read from the EXIF IFD section and index.
    */
-  private readIFDTag(sectionOffset: number, index: number): IFDTag {
+  readIFDTag(sectionOffset: number, index: number): IFDTag {
     const numEntries = this.readNumEntries(sectionOffset);
-
     if (index >= numEntries) {
       throw new Error(`IFD Index out of bounds, numEntries: ${numEntries}`);
     }
 
-    const entryOffset = sectionOffset + 2 + index * 12;
+    const entryOffset = this.TIFFStart + sectionOffset + 2 + index * 12;
     const tagID = this.readUInt16(entryOffset);
     const tagType = this.readUInt16(entryOffset + 2);
     const tagCount = this.readUInt32(entryOffset + 4);
     const valueOffset = this.readUInt32(entryOffset + 8);
 
-    const readAlias = [
-      this.readByte,       this.readASCII, 
-      this.readShort,      this.readLong, 
-      this.readRational,   this.readSByte, 
-      this.readUndefined,  this.readSShort, 
-      this.readSLong,      this.readSRational, 
-      this.readFloatValue, this.readDoubleValue
-    ][tagType - 1];
-
-    if (!readAlias) throw new Error(`Unknown IFD Tag Type: ${tagType - 1} -> ${IFDTypes[tagType - 1]}`);
-
-    //! Something awry with finding ExifVersion (0x9000...) very awry, VO should never be over 0xFFFF ExifOffset @ Value 7 is wrong.
-
-    const tagValue: any = tagType - 1 !== IFDTypes.ASCII && tagType - 1 !== IFDTypes.UNDEFINED ? (readAlias as (offset: number, count: number) => any).call(this, valueOffset, tagCount) : (readAlias as (offset: number) => any).call(this, valueOffset);
+    const tagValue = this.readData(valueOffset, tagType - 1, tagCount);
 
     const tagName = ExifTags[tagID]?.name ?? this.toHexString(tagID);
 
-    
-
-    log(`IFDReader val: ${tagValue} nam: ${tagName} ind: ${index} entOffs: ${entryOffset} tagId: ${this.toHexString(tagID)} tagTypeInt: ${tagType} tagTypeEnum: ${IFDTypes[tagType-1]} tagCnt: ${tagCount} valOff: ${valueOffset} -> handler = ${readAlias}`);
-
-    return {
-      tagID,
-      tagType,
-      tagCount,
-      tagValue,
-      tagName,
-    };
+    //! Not happy that this just 'works' and the type presumably is EITHER inferred or coerced but it works for what I'm doing...
+    return { tagID, tagType, tagCount, tagValue, tagName };
   }
 
   private readAllIFDtags(): void {
@@ -299,7 +219,7 @@ class IFDReader {
       try {
         const tag = this.readIFDTag(this.IFDOffset, i);
         this.tags.set(tag.tagName, tag);
-        //log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${tag.tagValue}`);
+        log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${JSON.stringify(tag.tagValue)} VT: ${typeof tag.tagValue}`);
       } catch (e) {
         log(`IFDReader Error reading tag at index ${i} -> ${e.name}: ${e.message}`);
       }
@@ -307,6 +227,10 @@ class IFDReader {
   }
 
   getAllTags(): typeof this.tags {
+    return this.tags;
+  }
+
+  get tagsMap() {
     return this.tags;
   }
 }

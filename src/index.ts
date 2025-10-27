@@ -15,9 +15,20 @@ export default class Reader {
   private cameraMapping: CameraMapping = undefined!;
   private buffer: Buffer<ArrayBufferLike> = undefined!;
 
+  /**
+   * Gets TIFF info so the IFDReaders can correctly function;
+   */
   private tiffReader: TIFFReader;
 
+  /**
+   * Reads APP1/IFD0 to get basic metas.
+   */
   private IFD0Reader: IFDReader;
+  
+  /**
+   * Reader for reading the EXIF Sub IFD
+   */
+  private EXIFSubIFDReader: IFDReader;
 
   constructor(buffer: Buffer<ArrayBufferLike>, overrideModel?: {maker: string, model: string}) {
     this.buffer = buffer;
@@ -27,8 +38,16 @@ export default class Reader {
       this.setModel(overrideModel.maker, overrideModel.model);
     }
 
-    this.IFD0Reader = new IFDReader(this.buffer, this.tiffReader.getFirstIFDOffset(), this.tiffReader.getLittleEndian());
+    this.IFD0Reader = new IFDReader(this.buffer, this.tiffReader.getFirstIFDOffset(), this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
     
+    const exifOffsetTag: IFDTag | undefined = this.IFD0Reader.tagsMap.get("ExifOffset");
+
+    if (!exifOffsetTag) {
+      throw new Error(`Exif Offset Tag, ${ExifTagsByName.ExifOffset.id} could not be read`);
+    }
+
+    //! Issue now reading the numEntries in this IFDReader, clearly due to the offset being misread or calculated poorly, not totally sure as-to-why as this seemingly is 'correct' of some level
+    this.EXIFSubIFDReader = new IFDReader(buffer, exifOffsetTag.tagValue as number, this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
 
   }
 

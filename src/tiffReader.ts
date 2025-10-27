@@ -5,7 +5,7 @@ import log from "./debug/debugger";
  */
 class TIFFReader {
   private buf: Buffer;
-  private tiffStart: any;
+  private tiffStart: number;
   private littleEndian: boolean;
 
   constructor(buffer: Buffer) {
@@ -15,7 +15,7 @@ class TIFFReader {
 
     this.verifyTIFFHeader();
 
-    log(`TIFFReader buffLen: ${this.buf.length} tiffStartOffset: ${this.tiffStart} littleEndian: ${this.littleEndian}`); 
+    log(`TIFFReader buffLen: ${this.buf.length} tiffStartOffset: ${this.tiffStart} littleEndian: ${this.littleEndian}`);
   }
 
   private findTiffStart(): number {
@@ -79,8 +79,7 @@ class TIFFReader {
   }
 
   getFirstIFDOffset(): number {
-    const relOffset = this.littleEndian ? this.buf.readUint32LE(this.getTIFFStartOffset() + 4) :this.buf.readUint32BE(this.getTIFFStartOffset() + 4);
-    return relOffset + this.getTIFFStartOffset();
+    return this.littleEndian ? this.buf.readUint32LE(this.getTIFFStartOffset() + 4) : this.buf.readUint32BE(this.getTIFFStartOffset() + 4);
   }
 }
 

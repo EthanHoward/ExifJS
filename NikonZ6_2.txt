@@ -1,0 +1,379 @@
+ExifTool Version Number         : 13.36
+File Name                       : NikonZ6_2.jpg
+Directory                       : tests/data/images/Nikon
+File Size                       : 53 kB
+File Modification Date/Time     : 2025:10:20 14:03:22+01:00
+File Access Date/Time           : 2025:10:27 14:04:33+00:00
+File Inode Change Date/Time     : 2025:10:20 14:09:30+01:00
+File Permissions                : -rw-r--r--
+File Type                       : JPEG
+File Type Extension             : jpg
+MIME Type                       : image/jpeg
+Exif Byte Order                 : Little-endian (Intel, II)
+Make                            : NIKON CORPORATION
+Camera Model Name               : NIKON Z 6_2
+Orientation                     : Horizontal (normal)
+X Resolution                    : 300
+Y Resolution                    : 300
+Resolution Unit                 : inches
+Software                        : NIKON Z 6_2 Ver.01.00
+Modify Date                     : 2020:11:03 14:20:14
+White Point                     : 0.313 0.329
+Primary Chromaticities          : 0.64 0.33 0.21 0.71 0.15 0.06
+Y Cb Cr Coefficients            : 0.299 0.587 0.114
+Y Cb Cr Positioning             : Co-sited
+Exposure Time                   : 1/2500
+F Number                        : 2.8
+Exposure Program                : Aperture-priority AE
+ISO                             : 100
+Sensitivity Type                : Recommended Exposure Index
+Recommended Exposure Index      : 100
+Exif Version                    : 0231
+Date/Time Original              : 2020:11:03 14:20:14
+Create Date                     : 2020:11:03 14:20:14
+Offset Time                     : +00:00
+Offset Time Original            : +00:00
+Offset Time Digitized           : +00:00
+Components Configuration        : Y, Cb, Cr, -
+Compressed Bits Per Pixel       : 4
+Shutter Speed Value             : 1/2500
+Aperture Value                  : 2.8
+Exposure Compensation           : 0
+Metering Mode                   : Multi-segment
+Light Source                    : Unknown
+Flash                           : No Flash
+Focal Length                    : 14.0 mm
+Maker Note Version              : 2.11
+Quality                         : Fine
+White Balance                   : Auto1
+Focus Mode                      : AF-S
+Flash Setting                   : Normal
+Flash Type                      : 
+WB RB Levels                    : 1.66796875 1.40625 1 1
+Program Shift                   : 0
+Exposure Difference             : 0
+Image Boundary                  : 0 0 6048 4024
+External Flash Exposure Comp    : 0
+Flash Exposure Bracket Value    : 0.0
+Exposure Bracket Value          : 0
+Crop Hi Speed                   : FX Uncropped (6064x4040 cropped to 6064x4040 at pixel 0,0)
+Exposure Tuning                 : 0
+VR Info Version                 : 0200
+Vibration Reduction             : On
+VR Mode                         : Normal
+VR Type                         : In-body
+Active D-Lighting               : Off
+Picture Control Version         : 0300
+Picture Control Name            : Auto
+Picture Control Base            : Auto
+Picture Control Adjust          : Quick Adjust
+Picture Control Quick Adjust    : n/a
+Mid Range Sharpness             : n/a
+Clarity                         : n/a
+Brightness                      : n/a
+Hue                             : n/a
+Filter Effect                   : n/a
+Toning Effect                   : n/a
+Toning Saturation               : n/a
+Time Zone                       : +00:00
+Daylight Savings                : No
+Date Display Format             : D/M/Y
+ISO Expansion                   : Off
+ISO2                            : 100
+ISO Expansion 2                 : Off
+Vignette Control                : Normal
+Shutter Mode                    : Auto (Mechanical)
+HDR Info Version                : 0100
+HDR                             : Off
+HDR Level                       : Auto
+HDR Smoothing                   : Off
+HDR Level 2                     : n/a
+Mechanical Shutter Count        : 1
+Image Size RAW                  : Large
+White Balance Fine Tune         : 0 0
+JPG Compression                 : Optimal Quality
+Primary Slot                    : CFexpress/XQD Card
+Secondary Slot Function         : Overflow
+ISO Auto Shutter Time           : Auto
+Flicker Reduction Shooting      : Disable
+Bracket Set                     : AE/Flash
+Bracket Program                 : Disabled
+Movie ISO Auto Control Manual Mode: On
+Movie White Balance Same As Photo: Yes
+Movie AF Area Mode              : Auto (People)
+AF-C Priority Sel               : Release
+AF-S Priority Sel               : Focus
+Block Shot AF Response          : 3 (Normal)
+AF Point Sel                    : Use All
+Store By Orientation            : Off
+AF Activation                   : Shutter/AF-On
+Focus Point Wrap                : No Wrap
+Manual Focus Point Illumination : On
+Dynamic Area AF Assist          : On
+Low Light AF                    : Off
+AF-Assist Illuminator           : On
+Manual Focus Ring In AF Mode    : On
+Exposure Control Step Size      : 1/3 EV
+Easy Exposure Compensation      : Off
+Center Weighted Area Size       : 12 mm
+Fine Tune Opt Matrix Metering   : 0
+Fine Tune Opt Center Weighted   : 0
+Fine Tune Opt Spot Metering     : 0
+Fine Tune Opt Highlight Weighted: 0
+Shutter Release Button AE-L     : Off
+Self Timer Time                 : 10 s
+Self Timer Shot Count           : 1
+Self Timer Shot Interval        : 0.5 s
+Playback Monitor Off Time       : 10 s
+Menu Monitor Off Time           : 1 min
+Image Review Monitor Off Time   : 4 s
+Standby Monitor Off Time        : 30 s
+CL Mode Shooting Speed          : 3 fps
+Max Continuous Release          : 200
+Sync Release Mode               : Sync
+Exposure Delay Mode             : Off
+Shutter Type                    : Auto
+Extended Shutter Speeds         : Off
+File Number Sequence            : On
+Apply Settings To Live View     : On
+Framing Grid Display            : Off
+Focus Peaking Level             : Off
+Focus Peaking Highlight Color   : Red
+Continuous Mode Display         : On
+Flash Sync Speed                : 1/200 s
+Flash Shutter Speed             : 1/60 s
+Flash Exposure Comp Area        : Entire Frame
+Auto Flash ISO Sensitivity      : Subject and Background
+Modeling Flash                  : On
+Auto Bracket Mode M             : Flash/Speed
+Func 1 Button                   : White Balance
+Func 2 Button                   : Focus Mode
+AF-On Button                    : AF-On
+Sub Selector                    : Focus Point Selection
+Sub Selector Center             : AE/AF Lock
+Assign Movie Record Button      : LiveView Info Display On/Off
+Lens Func 1 Button              : AE/AF Lock
+Lens Func 2 Button              : AF-On
+Lens Control Ring               : Aperture
+Multi Selector Shoot Mode       : Select Center Focus Point
+Multi Selector Playback Mode    : Zoom (Low)
+Shutter Speed Lock              : Off
+Aperture Lock                   : Off
+Cmd Dials Reverse Rotation      : Exposure Compensation
+Cmd Dials Change Main Sub       : Autofocus Off, Exposure Off
+Cmd Dials Menu And Playback     : Off
+Sub Dial Frame Advance          : 10 Frames
+Release Button To Use Dial      : No
+Reverse Indicators              : - 0 +
+Reverse Focus Ring              : Not Reversed
+Vertical Func Button            : AE Lock (reset on release)
+Vertical AF On Button           : Same as AF-On Button
+Vertical Multi Selector         : Same as MultiSelector
+Movie Func 1 Button             : White Balance
+Movie Func 2 Button             : Focus Mode
+Movie AF-On Button              : AF-On
+Assign Movie Subselector        : AE/AF Lock
+Movie Shutter Button            : Take Photo
+Movie Multi Selector            : Center Focus Point
+Movie AF Speed                  : 0
+Movie AF Speed Apply            : Always
+Movie AF Tracking Sensitivity   : 4 (Normal)
+Movie Highlight Display Pattern : Off
+Movie Highlight Display Threshold: 248
+Vertical Movie Func Button      : None
+Vertical Movie AF On Button     : Same as AF-On
+Language                        : English
+Monitor Brightness              : 0
+Shooting Info Display           : Manual (dark on light)
+Save Focus                      : Off
+Flick Advance Direction         : Left to Right
+HDMI Output Resolution          : Auto
+HDMI Output Range               : Auto
+HDMI External Recorder          : Off
+HDMI Bit Depth                  : 8 Bit
+Remote Func Button              : None
+USB Power Delivery              : Enable
+Energy Saving Mode              : Off
+Color Temperature Auto          : 4870
+Lens Type                       : AF
+Flash Mode                      : Did Not Fire
+Shooting Mode                   : Single-Frame, Auto ISO
+Lens F Stops                    : 6.00
+Shot Info Version               : 0803
+Firmware Version                : 01.00.e0
+Firmware Version 2              : 01.00.d0
+Firmware Version 3              : 01.00.00
+Number Offsets                  : 32
+Interval Shooting               : Off
+Image Area                      : FX (36x24)
+Roll Angle                      : 0.8
+Pitch Angle                     : 0.6
+Yaw Angle                       : 72.7
+Single Frame                    : 0
+Release Mode                    : Single Frame
+Interval Duration Hours         : 0
+Interval Duration Minutes       : 1
+Interval Duration Seconds       : 0
+Intervals                       : 1
+Shots Per Interval              : 1
+Interval Exposure Smoothing     : On
+Interval Priority               : Off
+Focus Shift Number Shots        : 100
+Focus Shift Step Width          : 5
+Focus Shift Interval            : 0 Seconds
+Focus Shift Exposure Lock       : On
+Diffraction Compensation        : On
+Auto Distortion Control         : On
+Nikon Metering Mode             : Matrix
+Flash Master Control Mode       : TTL
+Noise Reduction                 : Off
+Color Balance Version           : 0802
+Lens Data Version               : 0801
+Lens Firmware Version           : 1.0.0
+Max Aperture                    : 2.8
+Focus Distance                  : 4.05 m
+Lens Position Absolute          : 37
+Lens Mount Type                 : Z-mount
+Retouch History                 : None
+Image Data Size                 : 13192138
+Shutter Count                   : 1
+Flash Info Version              : 0300
+Flash Source                    : None
+External Flash Firmware         : n/a
+External Flash Flags            : (none)
+Flash Commander Mode            : Off
+Flash Control Mode              : Off
+Flash GN Distance               : 0
+Flash Color Filter              : None
+Flash Group A Control Mode      : Off
+Flash Group B Control Mode      : Off
+Flash Group C Control Mode      : Off
+Flash Illumination Pattern      : Standard
+Flash Group A Compensation      : +0.3
+Flash Group B Compensation      : +0.3
+Flash Group C Compensation      : +0.3
+Vari Program                    : 
+Multi Exposure Version          : 0102
+Multi Exposure Mode             : Off
+Multi Exposure Shots            : 0
+Multi Exposure Overlay Mode     : Add
+High ISO Noise Reduction        : Normal
+Power Up Time                   : 2020:11:03 13:49:55
+AF Info 2 Version               : 0301
+AF Detection Method             : Hybrid
+AF Area Mode                    : Wide (L)
+Focus Point Schema              : Off
+AF Coordinates Available        : Yes
+AF Image Width                  : 6048
+AF Image Height                 : 4024
+AF Area X Position              : 1404
+Focus Position Horizontal       : 6L of Center
+AF Area Y Position              : 3089
+Focus Position Vertical         : 3D from Center
+AF Area Width                   : 1643
+AF Area Height                  : 1100
+File Info Version               : 0100
+Memory Card Number              : 0
+Directory Number                : 100
+File Number                     : 0001
+AF Fine Tune                    : Off
+AF Fine Tune Index              : n/a
+AF Fine Tune Adj                : 0
+AF Fine Tune Adj Tele           : 0
+Retouch Info Version            : 0200
+Retouch NEF Processing          : Off
+Silent Photography              : Off
+Sub Sec Time                    : 06
+Sub Sec Time Original           : 06
+Sub Sec Time Digitized          : 06
+Flashpix Version                : 0100
+Color Space                     : Uncalibrated
+Exif Image Width                : 6048
+Exif Image Height               : 4024
+Interoperability Index          : R03 - DCF option file (Adobe RGB)
+Interoperability Version        : 0100
+Sensing Method                  : One-chip color area
+File Source                     : Digital Camera
+Scene Type                      : Directly photographed
+CFA Pattern                     : [Red,Green][Green,Blue]
+Custom Rendered                 : Custom
+Exposure Mode                   : Auto
+Focal Length In 35mm Format     : 14 mm
+Scene Capture Type              : Standard
+Gain Control                    : None
+Contrast                        : Normal
+Saturation                      : Normal
+Sharpness                       : Normal
+Subject Distance Range          : Unknown
+Serial Number                   : 6005684
+Lens Info                       : 14-24mm f/2.8
+Lens Make                       : NIKON
+Lens Model                      : NIKKOR Z 14-24mm f/2.8 S
+Lens Serial Number              : 20002111
+Gamma                           : 2.2
+GPS Version ID                  : 2.3.0.0
+Compression                     : JPEG (old-style)
+Thumbnail Offset                : 33468
+Thumbnail Length                : 11039
+XMP Toolkit                     : Adobe XMP Core 5.6-c140 79.160451, 2017/05/06-01:08:21
+Creator Tool                    : NIKON Z 6_2 Ver.01.00
+Rating                          : 2
+Metadata Date                   : 2020:11:13 10:20:46Z
+Label                           : Review
+Lens                            : NIKKOR Z 14-24mm f/2.8 S
+Image Number                    : 1
+Document ID                     : BBB805B7F6E7C93A8BD80D9B8036A5B5
+Original Document ID            : BBB805B7F6E7C93A8BD80D9B8036A5B5
+Instance ID                     : xmp.iid:3e3d8c92-be8c-45a6-a0bd-af651859c024
+Format                          : image/jpeg
+History Action                  : saved, saved
+History Instance ID             : xmp.iid:d705a57f-9127-4912-afcc-3c20fc27c480, xmp.iid:3e3d8c92-be8c-45a6-a0bd-af651859c024
+History When                    : 2020:11:03 17:55:20Z, 2020:11:13 10:20:46Z
+History Software Agent          : Adobe Photoshop Camera Raw 13.0, Adobe Photoshop Camera Raw 13.0.2 (Macintosh)
+History Changed                 : /metadata, /metadata
+Current IPTC Digest             : d488452d3f733db1e61ca42b8f39b73d
+Coded Character Set             : UTF8
+Application Record Version      : 4
+Date Created                    : 2020:11:03
+Time Created                    : 14:20:14+00:00
+IPTC Digest                     : d488452d3f733db1e61ca42b8f39b73d
+MPF Version                     : 0100
+Number Of Images                : 3
+MP Image Flags                  : Dependent child image
+MP Image Format                 : JPEG
+MP Image Type                   : Large Thumbnail (full HD equivalent)
+MP Image Length                 : 1099275
+MP Image Start                  : 13472661
+Dependent Image 1 Entry Number  : 0
+Dependent Image 2 Entry Number  : 0
+Image Width                     : 8
+Image Height                    : 8
+Encoding Process                : Baseline DCT, Huffman coding
+Bits Per Sample                 : 8
+Color Components                : 3
+Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2)
+Aperture                        : 2.8
+Blue Balance                    : 1.40625
+Image Size                      : 8x8
+Megapixels                      : 0.000064
+Red Balance                     : 1.667969
+Scale Factor To 35 mm Equivalent: 1.0
+Shutter Speed                   : 1/2500
+Create Date                     : 2020:11:03 14:20:14.06+00:00
+Date/Time Original              : 2020:11:03 14:20:14.06+00:00
+Modify Date                     : 2020:11:03 14:20:14.06+00:00
+Thumbnail Image                 : (Binary data 11039 bytes, use -b option to extract)
+Date/Time Created               : 2020:11:03 14:20:14+00:00
+Preview Image                   : (Binary data 226103 bytes, use -b option to extract)
+MP Image 3                      : (Binary data 1099275 bytes, use -b option to extract)
+Auto Focus                      : On
+Contrast Detect AF              : Off
+Lens Spec                       : 14-24mm f/2.8 AF
+Phase Detect AF                 : Off
+Circle Of Confusion             : 0.030 mm
+Depth Of Field                  : inf (1.48 m - inf)
+Field Of View                   : 104.1 deg (10.38 m)
+Focal Length                    : 14.0 mm (35 mm equivalent: 14.0 mm)
+Hyperfocal Distance             : 2.33 m
+Lens ID                         : NIKKOR Z 14-24mm f/2.8 S
+Light Value                     : 14.3

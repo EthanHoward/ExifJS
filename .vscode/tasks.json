@@ -22,16 +22,14 @@
       "label": "clean: remove dist",
       "type": "shell",
       "windows": {
-        "command": "rm -r dist || 1",
+        "command": "rm -r dist || 1"
       },
       "osx": {
-        "command": "rm",
-        "args": ["./dist", "-rf", "|| true"],
+        "command": "rm -rf ./dist || true"
       },
       "linux": {
-        "command": "rm",
-        "args": ["./dist", "-rf", "|| true"],
-      },
+        "command": "rm -rf ./dist || true"
+      }
     },
     {
       "label": "clean: create dist",
@@ -44,8 +42,18 @@
     {
       "label": "copy: test data",
       "type": "shell",
-      "command": "cpy",
-      "args": ["tests/data/**/*", "dist/tests/data", "--flat=false"],
+      "windows": {
+        "command": "cpy",
+        "args": ["tests/data/**/*", "dist/tests/data", "--flat=false"]
+      },
+      "osx": {
+        "command": "rsync",
+        "args": ["-a", "--delete", "${workspaceFolder}/tests/data/", "${workspaceFolder}/dist/tests/data/"]
+      },
+      "linux": {
+        "command": "rsync",
+        "args": ["-a", "--delete", "${workspaceFolder}/tests/data/", "${workspaceFolder}/dist/tests/data/"]
+      },
       "problemMatcher": [],
       "dependsOn": ["clean: create dist"]
     },

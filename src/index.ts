@@ -47,6 +47,7 @@ export default class Reader {
     }
 
     //! Issue now reading the numEntries in this IFDReader, clearly due to the offset being misread or calculated poorly, not totally sure as-to-why as this seemingly is 'correct' of some level
+    //! "Exception has occurred: TypeError [ERR_INVALID_ARG_TYPE]: The "offset" argument must be of type number. Received type string ('1244522')"
     this.EXIFSubIFDReader = new IFDReader(buffer, exifOffsetTag.tagValue as number, this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
 
   }

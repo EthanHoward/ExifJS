@@ -44,8 +44,8 @@
     {
       "label": "copy: test data",
       "type": "shell",
-      "command": "npx",
-      "args": ["cpy-cli", "tests/data/**/*", "dist/tests/data", "--flat=false"],
+      "command": "cpy",
+      "args": ["tests/data/**/*", "dist/tests/data", "--flat=false"],
       "problemMatcher": [],
       "dependsOn": ["clean: create dist"]
     },

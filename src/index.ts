@@ -29,6 +29,7 @@ export default class Reader {
    * Reader for reading the EXIF Sub IFD
    */
   private EXIFSubIFDReader: IFDReader;
+  //private MakerNoteSubIFDReader: IFDReader;
 
   constructor(buffer: Buffer<ArrayBufferLike>, overrideModel?: {maker: string, model: string}) {
     this.buffer = buffer;
@@ -50,6 +51,8 @@ export default class Reader {
     //! "Exception has occurred: TypeError [ERR_INVALID_ARG_TYPE]: The "offset" argument must be of type number. Received type string ('1244522')"
     this.EXIFSubIFDReader = new IFDReader(buffer, Number(exifOffsetTag.tagValue), this.tiffReader.getTIFFStartOffset() as number, this.tiffReader.getLittleEndian());
 
+    //! TODO: Need to find a way to read MakerNotes, not sure how, likely needs its own reader class.
+    //this.MakerNoteSubIFDReader = new IFDReader();
   }
 
   /**

@@ -11,6 +11,11 @@ function test(): void {
   
   const reader = new Reader(fileData, {maker: "Nikon", model: "Z6_2"});
   
+  const q: Record<string, IFDTag> = reader.getAllTags()
+
+  console.log(q["Make"]["tagValue"]);
+  console.log(q["Model"]["tagValue"]);
+
 }
 
 test();

@@ -4,7 +4,7 @@ import IFDTypes from "../src/meta/ifdTypes";
  * Stores the offsets for each tag in EXIF and MakerNote
  */
 export interface CameraMapping {
-  makerNoteOffsets: Record<string, { offset: number; type: IFDTypes }>;
+  makerNoteOffsets: Record<string, { offset: number; }>;
 }
 
 /**
@@ -29,8 +29,7 @@ export type Rational = {
  * Mapping used in exifTags.ts
  */
 export type EXIFTagMapping = { 
-  name: string; 
-  type: IFDTypes 
+  name: string;
 }
 
 /**

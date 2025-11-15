@@ -55,8 +55,6 @@ class IFDReader {
     this.readUInt32 = this.buf[this.littleEndian ? "readUInt32LE" : "readUInt32BE"].bind(this.buf);
 
     this.readAllIFDtags();
-
-    
   }
 
   /**
@@ -201,14 +199,22 @@ class IFDReader {
     const tagID = this.readUInt16(entryOffset);
     const tagType = this.readUInt16(entryOffset + 2);
     const tagCount = this.readUInt32(entryOffset + 4);
-    const valueOffset = this.readUInt32(entryOffset + 8);
-
-    const tagValue = this.readData(valueOffset, tagType - 1, tagCount);
 
     const tagName = ExifTags[tagID]?.name ?? this.toHexString(tagID);
 
-    //! Not happy that this just 'works' and the type presumably is EITHER inferred or coerced but it works for what I'm doing...
-    return { tagID, tagType, tagCount, tagValue, tagName };
+    // Refactor so if this explodes (fails reading VO or V) the tagID and tagName can be shown in error message, to make my life MUCH MUCH easier.
+    try {
+      const valueOffset = this.readUInt32(entryOffset + 8);
+      const tagValue = this.readData(valueOffset, tagType - 1, tagCount);
+
+      
+      
+      return { tagID, tagType, tagCount, tagValue, tagName };
+
+    } catch (e) {
+      throw new Error(`Error reading tag value or value offset of tag '${tagName}' ~${this.toHexString(tagID)} -> ${e.name}: ${e.message}`);
+    }
+    
   }
 
   private readAllIFDtags(): void {
@@ -221,7 +227,7 @@ class IFDReader {
         this.tags.set(tag.tagName, tag);
         log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${JSON.stringify(tag.tagValue)} VT: ${typeof tag.tagValue}`);
       } catch (e) {
-        log(`IFDReader Error reading tag at index ${i} -> ${e.name}: ${e.message}`);
+        log(`IFDReader ${e.message}`);
       }
     }
   }

@@ -1,7 +1,7 @@
-import IFDTypes from "./meta/ifdTypes";
-import { EXIFTagMapping, IFDTag } from "../typings";
-import { ExifTags } from "./meta/exifTags";
-import log from "./debug/debugger";
+import IFDTypes from "../meta/ifdTypes";
+import { IFDTag } from "../../typings";
+import { ExifTags } from "../meta/exifTags";
+import log from "../debug/debugger";
 
 /**
  * Reads a given IFD section based on image buffer, IFD Offset and endianness
@@ -28,7 +28,7 @@ class IFDReader {
   /**
    * Stores found IFD Tags from readAllIFDTags()
    */
-  private tags: Map<string, IFDTag> = new Map();
+  private tags: Record<string, IFDTag> = {};
 
   /**
    * The tiff start offset.
@@ -224,7 +224,7 @@ class IFDReader {
     for (let i = 0; i < IFDEntryCount; i++) {
       try {
         const tag = this.readIFDTag(this.IFDOffset, i);
-        this.tags.set(tag.tagName, tag);
+        this.tags[tag.tagName] = tag;
         log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${JSON.stringify(tag.tagValue)} VT: ${typeof tag.tagValue}`);
       } catch (e) {
         log(`IFDReader ${e.message}`);

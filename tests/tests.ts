@@ -18,6 +18,8 @@ function test(): void {
   console.log(q["Make"]["tagValue"]);
   console.log(q["Model"]["tagValue"]);
 
+  const makerNote = q["MakerNote"]["tagValue"];
+
 }
 
 test();

@@ -242,3 +242,4 @@ class IFDReader {
 }
 
 export default IFDReader;
+

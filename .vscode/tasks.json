@@ -15,8 +15,7 @@
       "label": "build: tests",
       "type": "shell",
       "command": "npx",
-      "args": ["tsc", "--build", "tsconfig.tests.json"],
-      "dependsOn": ["copy: test data"]
+      "args": ["tsc", "--build", "tsconfig.tests.json"]
     },
     {
       "label": "clean: remove dist",
@@ -38,24 +37,6 @@
       "args": ["dist"],
       "problemMatcher": [],
       "dependsOn": ["clean: remove dist"]
-    },
-    {
-      "label": "copy: test data",
-      "type": "shell",
-      "windows": {
-        "command": "cpy",
-        "args": ["tests/data/**/*", "dist/tests/data", "--flat=false"]
-      },
-      "osx": {
-        "command": "rsync",
-        "args": ["-a", "--delete", "${workspaceFolder}/tests/data/", "${workspaceFolder}/dist/tests/data/"]
-      },
-      "linux": {
-        "command": "rsync",
-        "args": ["-a", "--delete", "${workspaceFolder}/tests/data/", "${workspaceFolder}/dist/tests/data/"]
-      },
-      "problemMatcher": [],
-      "dependsOn": ["clean: create dist"]
     },
     {
       "label": "compound: pretest",

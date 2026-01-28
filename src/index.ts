@@ -1,10 +1,11 @@
 import { CameraMapping, IFDTag } from "../typings";
 import IFDTypes from "./meta/ifdTypes";
-import IFDReader from "./ifdReader";
+import IFDReader from "./ifd/ifdReader";
 import { CameraModels } from "./meta/cameraModels";
 import { ExifTags, ExifTagsByName } from "./meta/exifTags";
-import TIFFReader from "./tiffReader";
+import TIFFReader from "./ifd/tiffReader";
 import log from "./debug/debugger";
+import MakerNoteReader from "./makernote/makerNoteReader";
 
 //TODO! Not only finish the IFDReader class but add support for MakerNotes, i will PROBABLY make another class purely to handle that.
 
@@ -24,13 +25,16 @@ export default class Reader {
    * Reads APP1/IFD0 to get basic metas.
    */
   private IFD0Reader: IFDReader;
-  
+
   /**
    * Reader for reading the EXIF Sub IFD
    */
   private EXIFSubIFDReader: IFDReader;
+  //private MakerNoteSubIFDReader: IFDReader;
 
-  constructor(buffer: Buffer<ArrayBufferLike>, overrideModel?: {maker: string, model: string}) {
+  private makerNoteReader?: MakerNoteReader;
+
+  constructor(buffer: Buffer<ArrayBufferLike>, overrideModel?: { maker: string; model: string }) {
     this.buffer = buffer;
     this.tiffReader = new TIFFReader(this.buffer);
 
@@ -39,17 +43,32 @@ export default class Reader {
     }
 
     this.IFD0Reader = new IFDReader(this.buffer, this.tiffReader.getFirstIFDOffset(), this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
-    
-    const exifOffsetTag: IFDTag | undefined = this.IFD0Reader.tagsMap.get("ExifOffset");
+
+    const exifOffsetTag: IFDTag | undefined = this.IFD0Reader.tagsMap["ExifOffset"];
 
     if (!exifOffsetTag) {
       throw new Error(`Exif Offset Tag, ${ExifTagsByName.ExifOffset.id} could not be read`);
     }
 
-    //! Issue now reading the numEntries in this IFDReader, clearly due to the offset being misread or calculated poorly, not totally sure as-to-why as this seemingly is 'correct' of some level
-    //! "Exception has occurred: TypeError [ERR_INVALID_ARG_TYPE]: The "offset" argument must be of type number. Received type string ('1244522')"
-    this.EXIFSubIFDReader = new IFDReader(buffer, exifOffsetTag.tagValue as number, this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
+    this.EXIFSubIFDReader = new IFDReader(buffer, Number(exifOffsetTag.tagValue), this.tiffReader.getTIFFStartOffset(), this.tiffReader.getLittleEndian());
 
+    //! TODO: Need to find a way to read MakerNotes, not sure how, likely needs its own reader class.
+    //this.MakerNoteSubIFDReader = new IFDReader();
+
+    const makerNote = this.EXIFSubIFDReader.tagsMap["MakerNote"]?.tagValue;
+    const make      = this.IFD0Reader.tagsMap["Make"]?.tagValue;
+    const model     = this.IFD0Reader.tagsMap["Model"]?.tagValue;
+
+    log(`${make} -> ${model}`);
+    if (makerNote instanceof Buffer && typeof make === "string" && typeof model === "string") {
+      this.makerNoteReader = new MakerNoteReader(makerNote, make, model, this.tiffReader.getLittleEndian());
+      log("Accessed MakerNote!");
+    } else {
+      log(`Could not read MakerNote`);
+      log(`makerNote instanceof Buffer  -> ${makerNote instanceof Buffer} (${typeof makerNote})`);
+      log(`typeof make === "string"     -> ${make instanceof String}      (${typeof make})`);
+      log(`typeof model === "string"    -> ${model instanceof String}     (${typeof model})`);
+    }
   }
 
   /**
@@ -60,5 +79,19 @@ export default class Reader {
   private setModel(maker: string, model: string): void {
     this.cameraMapping = CameraModels[maker]?.[model];
     log(`Model set to "${maker}" "${model}"`);
+  }
+
+  /**
+   * Returns all tags, combined from IFD0, ExifSubIFD and MakerNote (If Successful)
+   * @returns {Record<string, IFDTag>} record containing all acquired tags by this reader instance, will include MakerNote if successful.
+   */
+  getAllTags(): Record<string, IFDTag> {
+    const IFD0Tags: Record<string, IFDTag> = this.IFD0Reader.getAllTags();
+    const EXIFTags: Record<string, IFDTag> = this.EXIFSubIFDReader.getAllTags();    
+
+    return {
+      ...IFD0Tags,
+      ...EXIFTags
+    }
   }
 }

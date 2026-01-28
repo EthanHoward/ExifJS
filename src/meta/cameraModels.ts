@@ -11,7 +11,7 @@ export const CameraModels: tCameraModels = {
   Nikon: {
     Z6_2: {
       makerNoteOffsets: {
-        ShutterCount: { offset: 0x001d, type: IFDTypes.UINT32 },
+        ShutterCount: { offset: 0x001d },
       },
     },
   },

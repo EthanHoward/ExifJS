@@ -1,4 +1,4 @@
-import log from "./debug/debugger";
+import log from "../debug/debugger";
 
 /**
  * Reads information about the TIFF section of the given file

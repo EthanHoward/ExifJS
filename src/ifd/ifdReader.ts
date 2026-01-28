@@ -1,7 +1,7 @@
-import IFDTypes from "./meta/ifdTypes";
-import { EXIFTagMapping, IFDTag } from "../typings";
-import { ExifTags } from "./meta/exifTags";
-import log from "./debug/debugger";
+import IFDTypes from "../meta/ifdTypes";
+import { IFDTag } from "../../typings";
+import { ExifTags } from "../meta/exifTags";
+import log from "../debug/debugger";
 
 /**
  * Reads a given IFD section based on image buffer, IFD Offset and endianness
@@ -28,12 +28,14 @@ class IFDReader {
   /**
    * Stores found IFD Tags from readAllIFDTags()
    */
-  private tags: Map<string, IFDTag> = new Map();
+  private tags: Record<string, IFDTag> = {};
 
   /**
    * The tiff start offset.
    */
   private TIFFStart: number;
+
+  private tagMappings: Record<number, { name: string }>
 
   /**
    * Constructs a new IFDReader class instance
@@ -41,7 +43,9 @@ class IFDReader {
    * @param {number} relIFDOffset The offset of the given IFD from the start of the file, (TiffOffset + IFDOffset)
    * @param {boolean} littleEndian The endianness of this,
    */
-  constructor(buffer: Buffer, relIFDOffset: number, tiffStartOffset: number, littleEndian: boolean) {
+  constructor(buffer: Buffer, relIFDOffset: number, tiffStartOffset: number, littleEndian: boolean, customMappings?: Record<number, { name: string }>) {
+    this.tagMappings = customMappings ?? ExifTags;
+
     this.buf = buffer;
 
     this.IFDOffset = relIFDOffset;
@@ -55,8 +59,6 @@ class IFDReader {
     this.readUInt32 = this.buf[this.littleEndian ? "readUInt32LE" : "readUInt32BE"].bind(this.buf);
 
     this.readAllIFDtags();
-
-    
   }
 
   /**
@@ -201,14 +203,22 @@ class IFDReader {
     const tagID = this.readUInt16(entryOffset);
     const tagType = this.readUInt16(entryOffset + 2);
     const tagCount = this.readUInt32(entryOffset + 4);
-    const valueOffset = this.readUInt32(entryOffset + 8);
 
-    const tagValue = this.readData(valueOffset, tagType - 1, tagCount);
+    const tagName = this.tagMappings[tagID]?.name ?? this.toHexString(tagID);
 
-    const tagName = ExifTags[tagID]?.name ?? this.toHexString(tagID);
+    // Refactor so if this explodes (fails reading VO or V) the tagID and tagName can be shown in error message, to make my life MUCH MUCH easier.
+    try {
+      const valueOffset = this.readUInt32(entryOffset + 8);
+      const tagValue = this.readData(valueOffset, tagType - 1, tagCount);
 
-    //! Not happy that this just 'works' and the type presumably is EITHER inferred or coerced but it works for what I'm doing...
-    return { tagID, tagType, tagCount, tagValue, tagName };
+      
+      
+      return { tagID, tagType, tagCount, tagValue, tagName };
+
+    } catch (e) {
+      throw new Error(`Error reading tag value or value offset of tag '${tagName}' ~${this.toHexString(tagID)} -> ${e.name}: ${e.message}`);
+    }
+    
   }
 
   private readAllIFDtags(): void {
@@ -218,10 +228,10 @@ class IFDReader {
     for (let i = 0; i < IFDEntryCount; i++) {
       try {
         const tag = this.readIFDTag(this.IFDOffset, i);
-        this.tags.set(tag.tagName, tag);
+        this.tags[tag.tagName] = tag;
         log(`IFDReader Read IFD tag [${i}] - ID: ${tag.tagID} (${tag.tagName}), Type: ${tag.tagType}, Count: ${tag.tagCount}, Value: ${JSON.stringify(tag.tagValue)} VT: ${typeof tag.tagValue}`);
       } catch (e) {
-        log(`IFDReader Error reading tag at index ${i} -> ${e.name}: ${e.message}`);
+        log(`IFDReader ${e.message}`);
       }
     }
   }
@@ -236,3 +246,4 @@ class IFDReader {
 }
 
 export default IFDReader;
+

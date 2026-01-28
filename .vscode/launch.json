@@ -12,7 +12,7 @@
       "cwd": "${workspaceFolder}",
       "program": "${cwd}/dist/tests/tests.js",
       "env": {
-        "DEVENV": "1"
+        "EXIFJS_DEVELOPMENT_LOGGING": "1"
       },
       "preLaunchTask": "compound: pretest",
       "console": "integratedTerminal",

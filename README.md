@@ -22,7 +22,7 @@ This project uses data and/or insiration from the below sources:
 # Enabling Debug Logs in ExifJS
 
 ExifJS includes optional **debug logging** for development and troubleshooting.  
-By default, debug logs are disabled. You can enable them by setting an environment variable `DEVENV=1`.
+By default, debug logs are disabled. You can enable them by setting an environment variable `EXIFJS_DEVELOPMENT_LOGGING=1`.
 
 ---
 
@@ -31,11 +31,11 @@ By default, debug logs are disabled. You can enable them by setting an environme
 Temporarily for one command:
 
 ```bash
-DEVENV=1 node dist/index.js
+EXIFJS_DEVELOPMENT_LOGGING=1 node dist/index.js
 ```
 
 ## VSCode Launch Config
-The launch config, which runs the tests for this library automatically provides DEVENV=1, if you wish to disable dev logging, change it in the launch config from "1" to "0"
+The launch config, which runs the tests for this library automatically provides EXIFJS_DEVELOPMENT_LOGGING=1, if you wish to disable dev logging, change it in the launch config from "1" to "0"
 
 ## .ts.old?
 Just old files of original code I may need to refer to, can be ignored and they are not compiled into dist.

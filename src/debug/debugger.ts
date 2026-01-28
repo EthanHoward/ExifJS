@@ -16,7 +16,7 @@ process.on("exit", () => {
 });
 
 const log = (lm: string) => {
-  if (process.env.DEVENV === "0") return;
+  if (process.env.EXIFJS_DEVELOPMENT_LOGGING !== "1") return;
 
   const timestamped = `[${new Date().toISOString()}] ${lm}`;
   logArray.push(timestamped);

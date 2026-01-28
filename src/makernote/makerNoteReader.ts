@@ -1,3 +1,4 @@
+import { IFDTag } from "../../typings";
 import log from "../debug/debugger";
 import MakerNoteReader_Nikon from "./custom/makerNoteReader_Nikon";
 
@@ -15,18 +16,18 @@ class MakerNoteReader {
         this.buf = buffer;
         this.littleEndian = littleEndian;
 
-        var parsedData = this.parse(buffer, make, model);
-
+        const parsedData = this.parse(buffer, make, model);
+        
         
     }
 
-
-    private parse(buffer: Buffer, make: String, model: String) {
+ 
+    private parse(buffer: Buffer, make: String, model: String): Record<string, IFDTag> {
         switch (make.toLowerCase()) {
             case "nikon corporation":
                 switch (model.toLowerCase()) {
                     case "nikon z 6_2":
-                        return MakerNoteReader_Nikon.parse(this.littleEndian, buffer);
+                        return MakerNoteReader_Nikon.parse(buffer);
                     default:
                         throw new Error(`This Model is not currently supported, Make: '${make}', Model: '${model}'`); 
                 }

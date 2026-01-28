@@ -61,7 +61,7 @@ export default class Reader {
 
     log(`${make} -> ${model}`);
     if (makerNote instanceof Buffer && typeof make === "string" && typeof model === "string") {
-      this.makerNoteReader = new MakerNoteReader(makerNote, make, model);
+      this.makerNoteReader = new MakerNoteReader(makerNote, make, model, this.tiffReader.getLittleEndian());
       log("Accessed MakerNote!");
     } else {
       log(`Could not read MakerNote`);

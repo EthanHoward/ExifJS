@@ -35,13 +35,17 @@ class IFDReader {
    */
   private TIFFStart: number;
 
+  private tagMappings: Record<number, { name: string }>
+
   /**
    * Constructs a new IFDReader class instance
    * @param {Buffer} buffer The image buffer
    * @param {number} relIFDOffset The offset of the given IFD from the start of the file, (TiffOffset + IFDOffset)
    * @param {boolean} littleEndian The endianness of this,
    */
-  constructor(buffer: Buffer, relIFDOffset: number, tiffStartOffset: number, littleEndian: boolean) {
+  constructor(buffer: Buffer, relIFDOffset: number, tiffStartOffset: number, littleEndian: boolean, customMappings?: Record<number, { name: string }>) {
+    this.tagMappings = customMappings ?? ExifTags;
+
     this.buf = buffer;
 
     this.IFDOffset = relIFDOffset;
@@ -200,7 +204,7 @@ class IFDReader {
     const tagType = this.readUInt16(entryOffset + 2);
     const tagCount = this.readUInt32(entryOffset + 4);
 
-    const tagName = ExifTags[tagID]?.name ?? this.toHexString(tagID);
+    const tagName = this.tagMappings[tagID]?.name ?? this.toHexString(tagID);
 
     // Refactor so if this explodes (fails reading VO or V) the tagID and tagName can be shown in error message, to make my life MUCH MUCH easier.
     try {
